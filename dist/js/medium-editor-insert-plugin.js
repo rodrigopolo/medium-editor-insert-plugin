@@ -738,7 +738,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
         range.setStart(el.childNodes[0], position);
         range.collapse(true);
         sel.removeAllRanges();
-        sel.addRange(range);
+        //sel.addRange(range); // Removed because it gives weird errors
     };
 
     /**
@@ -1646,6 +1646,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
                 acceptFileTypesError: 'This file is not in a supported format: ',
                 maxFileSizeError: 'This file is too big: '
             }
+            // uploadError: function($el, data) {}
             // uploadCompleted: function ($el, data) {}
         };
 
@@ -1822,7 +1823,14 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
             uploadErrors.push(this.options.messages.maxFileSizeError + file.name);
         }
         if (uploadErrors.length > 0) {
+            if (this.options.uploadFailed && typeof this.options.uploadFailed === "function") {
+                this.options.uploadFailed(uploadErrors, data);
+
+                return;
+            }
+
             alert(uploadErrors.join("\n"));
+
             return;
         }
 
@@ -1924,6 +1932,12 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
      */
 
     Images.prototype.uploadDone = function (e, data) {
+        
+        // Image replacement if upload fails
+        if(data.result.files[0].error && this.options.errorImg){
+            data.result.files[0].url = this.options.errorImg;
+        }
+
         $.proxy(this, 'showImage', data.result.files[0].url, data)();
 
         this.core.clean();

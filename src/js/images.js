@@ -359,6 +359,12 @@
      */
 
     Images.prototype.uploadDone = function (e, data) {
+        
+        // Image replacement if upload fails
+        if(data.result.files[0].error && this.options.errorImg){
+            data.result.files[0].url = this.options.errorImg;
+        }
+
         $.proxy(this, 'showImage', data.result.files[0].url, data)();
 
         this.core.clean();

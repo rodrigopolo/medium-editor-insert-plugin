@@ -573,7 +573,7 @@
         range.setStart(el.childNodes[0], position);
         range.collapse(true);
         sel.removeAllRanges();
-        sel.addRange(range);
+        //sel.addRange(range); // Removed because it gives weird errors
     };
 
     /**
